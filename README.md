@@ -1,4 +1,4 @@
-# 🌟 Cache-Cool
+# 🌟 Cache Cool
 
 **Cache-Cool** is a simple LLM (Large Language Model) caching proxy for saving your LLM calls. It acts as a caching layer for LLM API calls, such as OpenAI or Claude, to improve performance and reduce costs by avoiding redundant requests to the LLM providers. The caching is implemented using both MongoDB and JSON files.
 
