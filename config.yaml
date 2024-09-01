@@ -1,0 +1,36 @@
+llm_schemas:
+  openai:
+    endpoint: "https://api.openai.com/v1/chat/completions"
+    headers:
+      - "Content-Type: application/json"
+      - "Authorization: Bearer {api_key}"
+    temperature_threshold: 0.8
+  claude:
+    endpoint: "https://api.claude.ai/v1/chat/completions"
+    headers:
+      - "Content-Type: application/json"
+      - "Authorization: Bearer {api_key}"
+    temperature_threshold: 0.85
+  avalai:
+    endpoint: "https://api.avalapis.ir/v1/chat/completions"
+    headers:
+      - "Content-Type: application/json"
+      - "Authorization: {api_key}"
+    temperature_threshold: 0.85
+
+mongodb:
+  uri: "mongodb://localhost:27017"
+  db_name: "llm_cache_db"
+  collection_name: "cache"
+
+json_cache_file: "cache.json"
+
+redis:
+  enabled: false
+  host: "localhost"
+  port: 6379
+  db: 0
+
+current_llm_service: "openai"
+use_json_cache: true
+use_mongo_cache: true
