@@ -213,6 +213,13 @@ We welcome contributions! Here’s how you can help:
 5. Push to the branch (`git push origin feature-branch`).
 6. Create a new Pull Request.
 
+This project includes contributions from:
+
+- [Lior Soffer](https://github.com/LiorSoffer)
+- [Ariel Hartal](https://github.com/arielhartal)
+- [Adi Fayer](https://github.com/adif97)
+
+
 ### 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
