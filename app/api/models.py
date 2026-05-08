@@ -1,5 +1,6 @@
 from pydantic import BaseModel, HttpUrl, Field, model_validator
 from typing import Any, List, Optional, Dict
+from app.core.config import settings
 
 
 class Message(BaseModel):
@@ -12,23 +13,33 @@ class Message(BaseModel):
     def validate_input(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         # Check if the input is a simple string
         if isinstance(values, str):
-            values = {"role": "user", "content": values, "message": values}
+            values = {"role": "user", "content": values}
         elif isinstance(values, dict):
             # Ensure required fields are present
             if "content" not in values:
                 raise ValueError("Field 'content' is required.")
-            if "role" not in values:
-                values["role"] = "user"  # Default role if not provided
-            values["message"] = values.get(
-                "message", values["content"]
-            )  # Default message
+            if 'role' not in values:
+                values['role'] = "user"  # Default role if not provided
+        return values
 
+# Default Message model with message field
+class MessageDefault(MessageGroq):
+    message: Optional[str]
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_input(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        values = super().validate_input(values)
+        values['message'] = values.get('message', values['content'])  # Default message
         return values
 
 
+# Dynamically select Message model based on current_llm_service setting
+MessageModel = MessageGroq if settings.current_llm_service == "groq" else MessageDefault
+
 class ChatCompletionRequest(BaseModel):
     model: str
-    messages: List[Message]
+    messages: List[MessageModel]
     temperature: float = Field(default=1.0, ge=0.0, le=2.0)
     max_tokens: Optional[int] = None
     n: Optional[int] = None
@@ -68,3 +79,4 @@ class ConfigurationUpdate(BaseModel):
     current_llm_service: str
     use_json_cache: bool
     use_mongo_cache: bool
+    cache_max_size: int

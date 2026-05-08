@@ -12,15 +12,19 @@
 
 - **💾 Cache Responses**: Caches responses from LLM API calls to reduce redundancy.
 - **⚙️ Dynamic Configuration**: Allows dynamic configuration of LLM service and caching mechanisms via the `/configure` endpoint.
-- **🔄 Supports Multiple LLMs**: Configurable to support different LLM services (e.g., OpenAI, Claude).
+- **🔄 Supports Multiple LLMs**: Configurable to support different LLM services (e.g., OpenAI, Claude, Groq).
 - **📂 Uses MongoDB and JSON for Caching**: Leverages both MongoDB and JSON files for caching API responses.
+- **♻️ Implements LRU eviction for JSON and Mongo caches.**
+- **⚡ Redis caching relies on Redis's default LRU mechanism.**
+
+
 
 ## 📡 Endpoints
 
 - **POST /{schema_name}/chat/completions**:
 
 > ***schema_name*** is defined in **confing.yaml**
-  
+
 Forwards chat completion requests to the configured LLM service or returns cached responses.
 
 - **GET /configure**: Retrieves current configuration details.
@@ -128,6 +132,12 @@ llm_schemas:
       - "Content-Type: application/json"
       - "Authorization: {api_key}"
     temperature_threshold: 0.85
+  groq:
+    endpoint: "https://api.groq.com/openai/v1/chat/completions"
+    headers:
+      - "Content-Type: application/json"
+      - "Authorization: {api_key}"
+    temperature_threshold: 0.8
 
 mongodb:
   uri: "mongodb://localhost:27017"
@@ -145,7 +155,44 @@ redis:
 current_llm_service: "openai"
 use_json_cache: true
 use_mongo_cache: true
+cache_max_size: 3
 ```
+
+### ♻️ LRU Caching (Least Recently Used)
+
+Cache-Cool supports Least Recently Used (LRU) eviction to keep the cache size manageable and efficient.
+
+- For **JSON file** and **MongoDB** caching, LRU is implemented by tracking the last access time of cache entries.
+- You must enable `use_json_cache` or `use_mongo_cache` and set `cache_max_size` in your `config.yaml` to activate LRU eviction. For example:
+
+```yaml
+use_json_cache: true
+use_mongo_cache: true
+cache_max_size: 3
+```
+
+When the number of cached items exceeds `cache_max_size`, the least recently accessed item is automatically evicted.
+
+- For **Redis**, Cache-Cool relies on Redis’s built-in LRU eviction policies. To enable LRU in Redis, configure your `redis.conf` or via command line with:
+
+```bash
+maxmemory 100mb               # Set maximum Redis memory usage (adjust as needed)
+maxmemory-policy allkeys-lru  # Use LRU eviction policy when maxmemory is exceeded
+sudo systemctl restart redis  # Restart Redis to apply changes
+```
+
+Make sure Redis caching is enabled in your `config.yaml`:
+
+```yaml
+redis:
+  enabled: true
+  host: "localhost"
+  port: 6379
+  db: 0
+```
+
+This way, Redis handles eviction automatically without Cache-Cool implementing it explicitly.
+
 
 ### 📡 API Usage
 
@@ -165,6 +212,13 @@ We welcome contributions! Here’s how you can help:
 4. Commit your changes (`git commit -am 'Add some feature'`).
 5. Push to the branch (`git push origin feature-branch`).
 6. Create a new Pull Request.
+
+This project includes contributions from:
+
+- [Lior Soffer](https://github.com/LiorSoffer)
+- [Ariel Hartal](https://github.com/arielhartal)
+- [Adi Fayer](https://github.com/adif97)
+
 
 ### 📜 License
 

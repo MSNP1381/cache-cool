@@ -33,6 +33,7 @@ class Configs(BaseModel):
     current_llm_service: str
     use_json_cache: bool
     use_mongo_cache: bool
+    cache_max_size: int
 
     @classmethod
     def load_from_yaml(cls, yaml_file: str):

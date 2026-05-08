@@ -25,8 +25,9 @@ async def chat_completions(schema_name: str,request: Request):
 
     # Check cache if temperature is below threshold
     if chat_request.temperature <= llm_service.get_temperature_threshold():
-        cached_response = await cache_service.get(json.dumps(request_body_json))
+        cached_response = await cache_service.get(chat_request.model_dump_json())
         if cached_response:
+            print("hit!")
             return cached_response
     # Make API call
     response = await llm_service.generate_response(chat_request,api_key)

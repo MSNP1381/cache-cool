@@ -8,3 +8,4 @@ httpx
 pytest
 pytest-asyncio
 PyYAML
+requests

@@ -17,6 +17,12 @@ llm_schemas:
       - "Content-Type: application/json"
       - "Authorization: {api_key}"
     temperature_threshold: 0.85
+  groq:
+    endpoint: "https://api.groq.com/openai/v1/chat/completions"
+    headers:
+      - "Content-Type: application/json"
+      - "Authorization: {api_key}"
+    temperature_threshold: 0.8
 
 mongodb:
   uri: "mongodb://localhost:27017"
@@ -34,3 +40,4 @@ redis:
 current_llm_service: "openai"
 use_json_cache: true
 use_mongo_cache: true
+cache_max_size: 3
